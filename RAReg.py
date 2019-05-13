@@ -67,6 +67,7 @@ by default
 
 
 def run_all_polynomials(args=None):
+
     # Reads in the neccessary csv file
     df = pd.read_csv(args.csv[0])
     regr = linear_model.LinearRegression()
@@ -74,7 +75,9 @@ def run_all_polynomials(args=None):
     newpath = './'
     if (not os.path.exists('./' + args.out[0])) and (args.out[0] != ""):
         newpath = newpath + args.out[0] + '/'
-        os.makedirs('./' + args.out[0])
+        os.makedirs(args.out[0])
+    else:
+        newpath = args.out[0] + "/"
 
     print("xVal, yVal, degree, r2, rmse")
     for i in range(args.start[0], args.end[0]):
@@ -107,7 +110,7 @@ def main():
     parser.add_argument("-min", nargs=1, help="The minimum number a regression's P-score must get in order to output "
                                               "its graph. 0 by default", type=float, default=[0])
     parser.add_argument("-max", nargs=1, help="The maximum number a regression's P-score must get in order to output "
-                                              "its graph. 1 by default", type=float, default=[0])
+                                              "its graph. 1 by default", type=float, default=[1])
     parser.add_argument("-deg", nargs=1, help="The maximum degree polynomial which the regression will be run. Must be "
                                               "at least 1, is 1 by default, and runs all polynomial degree regressions "
                                               "up to that", type=int, default=[1])

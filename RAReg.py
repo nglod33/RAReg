@@ -66,21 +66,21 @@ by default
 """
 
 
-def run_all_polynomials(args):
+def run_all_polynomials(args=None):
     # Reads in the neccessary csv file
-    df = pd.read_csv(args.csv)
+    df = pd.read_csv(args.csv[0])
     regr = linear_model.LinearRegression()
 
     newpath = './'
-    if (not os.path.exists('./' + args.out)) and (args.out != ""):
-        newpath = newpath + args.out + '/'
-        os.makedirs('./' + args.out)
+    if (not os.path.exists('./' + args.out[0])) and (args.out[0] != ""):
+        newpath = newpath + args.out[0] + '/'
+        os.makedirs('./' + args.out[0])
 
     print("xVal, yVal, degree, r2, rmse")
-    for i in range(args.start, args.end):
-        for j in range(1, args.end - i):
+    for i in range(args.start[0], args.end[0]):
+        for j in range(1, args.end[0] - i):
             mat = df[[df.columns[i], df.columns[i + j]]].values
-            for d in range(1, args.degree):
+            for d in range(1, args.deg[0] + 1):
                 rmse, r2 = poly_regression(mat[:, 0], mat[:, 1], d)
                 plt.figure(figsize=(9, 9))
                 plt.xlabel(df.columns[i])
@@ -89,7 +89,7 @@ def run_all_polynomials(args):
                 plt.scatter(mat[:, 0], mat[:, 1])
 
                 # Eliminates all of the graphs with correlations below 0.1
-                if (r2 > args.min) and (r2 < args.max):
+                if (r2 > args.min[0]) and (r2 < args.max[0]):
                     plt.savefig(newpath + df.columns[i] + '_vs_' + df.columns[i + j] + '_' + str(d) + '_degree.png')
 
                 print(df.columns[i] + ', ' + df.columns[i + j] + ', ' + str(d) + ', ' + str(r2) + ', ' + str(rmse))
@@ -103,17 +103,16 @@ def main():
                         help="The column at which the regression starts. Must be the column number. Col 0 by default",
                         type=int, default=0)
     parser.add_argument("-end", nargs=1, help="The column at which the regression ends. Must be the column number."
-                                              " Column zero by default,", type=int, default=0)
+                                              " Column zero by default,", type=int, default=[0])
     parser.add_argument("-min", nargs=1, help="The minimum number a regression's P-score must get in order to output "
-                                              "its graph. 0 by default", type=float, default=0)
+                                              "its graph. 0 by default", type=float, default=[0])
     parser.add_argument("-max", nargs=1, help="The maximum number a regression's P-score must get in order to output "
-                                              "its graph. 1 by default", type=float, default=0)
+                                              "its graph. 1 by default", type=float, default=[0])
     parser.add_argument("-deg", nargs=1, help="The maximum degree polynomial which the regression will be run. Must be "
                                               "at least 1, is 1 by default, and runs all polynomial degree regressions "
-                                              "up to that", type=int, default=1)
+                                              "up to that", type=int, default=[1])
     parser.add_argument("-out", nargs=1, help="The folder to which all regression graphs are outputted. Must be a "
-                                              "relative file path. Outputs to current folder by default", type=str, default="")
-    parser.set_defaults(function=run_all_polynomials(args=parser.parse_args()))
+                                              "relative file path. Outputs to current folder by default", type=str, default=[""])
     run_all_polynomials(args=parser.parse_args())
 
 
